@@ -1,303 +1,130 @@
-# Payload Website Template
+# 🎓 Temă de Laborator: Baze de Date
+## Proiect: Generarea Migrației Inițiale pentru Baza de Date a Asociației AI3
 
-This is the official [Payload Website Template](https://github.com/payloadcms/payload/blob/main/templates/website). Use it to power websites, blogs, or portfolios from small to enterprise. This repo includes a fully-working backend, enterprise-grade admin panel, and a beautifully designed, production-ready website.
+### 1. Contextul Proiectului
+Bun venit la o provocare reală! Scopul acestui laborator este să modelăm și să implementăm structura bazei de date pentru o aplicație funcțională. "Clientul" este Asociația AI3 (Clusterul de IT&C Alba), care are nevoie de o platformă pentru a-și gestiona activitățile principale:
 
-This template is right for you if you are working on:
+- Activitățile Curente (întâlniri săptămânale, Coder Dojo, festivalul #difffusion).
+- Membrii și Voluntarii asociației.
+- Conținutul Public (articole de blog, pagini).
 
-- A personal or enterprise-grade website, blog, or portfolio
-- A content publishing platform with a fully featured publication workflow
-- Exploring the capabilities of Payload
+Baza de date pe care o veți crea va sta la baza site-urilor web ale asociației, Dojo-ului și festivalului.
 
-Core features:
+### 2. Tehnologia: Payload CMS
+Pentru acest proiect, vom folosi Payload CMS.
 
-- [Pre-configured Payload Config](#how-it-works)
-- [Authentication](#users-authentication)
-- [Access Control](#access-control)
-- [Layout Builder](#layout-builder)
-- [Draft Preview](#draft-preview)
-- [Live Preview](#live-preview)
-- [On-demand Revalidation](#on-demand-revalidation)
-- [SEO](#seo)
-- [Search](#search)
-- [Redirects](#redirects)
-- [Jobs and Scheduled Publishing](#jobs-and-scheduled-publish)
-- [Website](#website)
+Ce este? Payload este un Headless CMS (Content Management System) scris în TypeScript. În loc să scriem SQL direct, definim structura datelor sub formă de "Colecții" (Collections) în codul TypeScript.
 
-## Quick Start
+Cum funcționează? Pe baza acestor definiții (pe care le veți scrie local), Payload generează automat un fișier de migrație pentru baza de date.
 
-To spin up this example locally, follow these steps:
+Scopul Vostru: Să scrieți definițiile colecțiilor necesare și să folosiți uneltele Payload pentru a genera fișierul de migrație inițială. Acest fișier generat este livrabilul principal.
 
-### Clone
+➡️ Documentație Oficială Payload: https://payloadcms.com/docs/getting-started/installation
 
-If you have not done so already, you need to have standalone copy of this repo on your machine. If you've already cloned this repo, skip to [Development](#development).
+### 3. Cerințe de Modelare (Specificații)
+Pentru a genera migrația corectă, trebuie să modelați următoarele entități. Toate denumirile (colecții și câmpuri) trebuie să fie în limba engleză.
 
-Use the `create-payload-app` CLI to clone this template directly to your machine:
+Acestea sunt specificațiile pe baza cărora veți lucra. Nu trebuie să predați fișierele de colecții, ci doar migrația pe care o produc acestea.
 
-```bash
-pnpx create-payload-app my-project -t website
-```
+#### A. Colecții de Bază și Inițiative
 
-### Development
+**Roles (Roluri)**
 
-1. First [clone the repo](#clone) if you have not done so already
-1. `cd my-project && cp .env.example .env` to copy the example environment variables
-1. `pnpm install && pnpm dev` to install dependencies and start the dev server
-1. open `http://localhost:3000` to open the app in your browser
+Câmpuri: name (text, unic, required).
 
-That's it! Changes made in `./src` will be reflected in your app. Follow the on-screen instructions to login and create your first admin user. Then check out [Production](#production) once you're ready to build and serve your app, and [Deployment](#deployment) when you're ready to go live.
+(Colecția Users, deja existentă, va avea o relație many-to-many cu Roles).
 
-## How it works
+**Members (Membri AI3)**
 
-The Payload config is tailored specifically to the needs of most websites. It is pre-configured in the following ways:
+Câmpuri: user (relație 1-la-1 cu Users), type (select: 'aspirant', 'voting'), subType (select: 'founder', 'honorary' - condițional, doar dacă type este 'voting'), name (text), organization (text), photo (relație 1-la-1 cu Media).
 
-### Collections
+**Initiatives (Inițiative AI3)**
 
-See the [Collections](https://payloadcms.com/docs/configuration/collections) docs for details on how to extend this functionality.
+Câmpuri: title (text), description (richText), image (relație cu Media), siteLink (url).
 
-- #### Users (Authentication)
+(Colecția Posts, deja existentă, ar trebui modificată pentru a avea o relație many-to-one cu Initiatives).
 
-  Users are auth-enabled collections that have access to the admin panel and unpublished content. See [Access Control](#access-control) for more details.
+#### B. Modulul 1: Întâlniri Săptămânale
 
-  For additional help, see the official [Auth Example](https://github.com/payloadcms/payload/tree/main/examples/auth) or the [Authentication](https://payloadcms.com/docs/authentication/overview#authentication-overview) docs.
+**Meetings**
 
-- #### Posts
+Câmpuri: title (text, required), date (date, required), venue (text, required), type (select: 'workshop', 'anti-workshop'), workshopTopic (select: 'Demo your stack', 'F*ck-up nights', 'Meet the business' - condițional), presenter (relație 1-la-1 cu Members - condițional), discussionAgenda (richText - condițional).
 
-  Posts are used to generate blog posts, news articles, or any other type of content that is published over time. All posts are layout builder enabled so you can generate unique layouts for each post using layout-building blocks, see [Layout Builder](#layout-builder) for more details. Posts are also draft-enabled so you can preview them before publishing them to your website, see [Draft Preview](#draft-preview) for more details.
+#### C. Modulul 2: Coder Dojo Alba Iulia
 
-- #### Pages
+**Ninjas (Copii înscriși)**
 
-  All pages are layout builder enabled so you can generate unique layouts for each page using layout-building blocks, see [Layout Builder](#layout-builder) for more details. Pages are also draft-enabled so you can preview them before publishing them to your website, see [Draft Preview](#draft-preview) for more details.
+Câmpuri: childName (text), age (number), usefulInfo (textarea), guardianName (text), guardianEmail (email), guardianPhone (text), safetyAgreement (checkbox, required), photoReleaseAgreement (checkbox, required).
 
-- #### Media
+**Mentors**
 
-  This is the uploads enabled collection used by pages, posts, and projects to contain media like images, videos, downloads, and other assets. It features pre-configured sizes, focal point and manual resizing to help you manage your pictures.
+Câmpuri: name (text), bio (richText), photo (relație cu Media), userAccount (relație 1-la-1, opțională, cu Users).
 
-- #### Categories
+#### D. Modulul 3: Festivalul #difffusion
 
-  A taxonomy used to group posts together. Categories can be nested inside of one another, for example "News > Technology". See the official [Payload Nested Docs Plugin](https://payloadcms.com/docs/plugins/nested-docs) for more details.
+**FestivalEditions**
 
-### Globals
+Câmpuri: year (number, required), title (text, required), theme (text), description (richText).
 
-See the [Globals](https://payloadcms.com/docs/configuration/globals) docs for details on how to extend this functionality.
+**FestivalSections**
 
-- `Header`
+Câmpuri: edition (relație many-to-one cu FestivalEditions), name (text).
 
-  The data required by the header on your front-end like nav links.
+**Locations**
 
-- `Footer`
+Câmpuri: edition (relație many-to-one cu FestivalEditions), name (text), address (text), coordinates (point), description (richText), floorPlan (relație cu Media), capacity (number), facilities (array de tag-uri), photos (relație one-to-many cu Media), coordinator (relație 1-la-1 cu Volunteers).
 
-  Same as above but for the footer of your site.
+**Guests (Invitați Festival)**
 
-## Access control
+Câmpuri: edition (relație many-to-one cu FestivalEditions), name (text), organization (text), guestType (array de checkbox-uri: 'speaker', 'workshop_holder', 'exhibitor'), bio (richText), photo (relație cu Media), website (url).
 
-Basic access control is setup to limit access to various content based based on publishing status.
+**Volunteers**
 
-- `users`: Users can access the admin panel and create or edit content.
-- `posts`: Everyone can access published posts, but only users can create, update, or delete them.
-- `pages`: Everyone can access published pages, but only users can create, update, or delete them.
+Câmpuri: edition (relație many-to-one cu FestivalEditions), name (text), photo (relație cu Media), organization (text), birthDate (date), phone (text), agreementDocument (relație cu Media), coordinator (relație many-to-one cu Members), userAccount (relație 1-la-1, opțională, cu Users).
 
-For more details on how to extend this functionality, see the [Payload Access Control](https://payloadcms.com/docs/access-control/overview#access-control) docs.
+**Activities (Activități Festival)**
 
-## Layout Builder
+Câmpuri: edition (relație many-to-one cu FestivalEditions), title (text), description (richText), type (select: 'expo', 'talk', 'workshop', 'social', 'entertainment'), audience (array de checkbox-uri), guests (relație many-to-many cu Guests), section (relație many-to-one, opțională, cu FestivalSections).
 
-Create unique page layouts for any type of content using a powerful layout builder. This template comes pre-configured with the following layout building blocks:
+**Schedule (Programul Festivalului)**
 
-- Hero
-- Content
-- Media
-- Call To Action
-- Archive
+Câmpuri: edition (relație many-to-one cu FestivalEditions), startTime (date), endTime (date), activity (relație many-to-one cu Activities), location (relație many-to-one cu Locations).
 
-Each block is fully designed and built into the front-end website that comes with this template. See [Website](#website) for more details.
+### 4. 🎯 Livrabile Obligatorii
+Pentru a finaliza tema, trebuie să pregătiți și să trimiteți un Pull Request (PR) care să conțină exact două lucruri:
 
-## Lexical editor
+**_Fișierul de Migrație Inițială (Generat)_**
 
-A deep editorial experience that allows complete freedom to focus just on writing content without breaking out of the flow with support for Payload blocks, media, links and other features provided out of the box. See [Lexical](https://payloadcms.com/docs/rich-text/overview) docs.
+Acesta este elementul central al temei.
 
-## Draft Preview
+După ce ați definit toate colecțiile (local, în proiectul vostru), trebuie să rulați comanda de generare a migrației (ex: npm run payload migrate).
 
-All posts and pages are draft-enabled so you can preview them before publishing them to your website. To do this, these collections use [Versions](https://payloadcms.com/docs/configuration/collections#versions) with `drafts` set to `true`. This means that when you create a new post, project, or page, it will be saved as a draft and will not be visible on your website until you publish it. This also means that you can preview your draft before publishing it to your website. To do this, we automatically format a custom URL which redirects to your front-end to securely fetch the draft version of your content.
+Această comandă va crea un singur fișier în src/migrations/, cu un nume de forma 0001_initial.ts.
 
-Since the front-end of this template is statically generated, this also means that pages, posts, and projects will need to be regenerated as changes are made to published documents. To do this, we use an `afterChange` hook to regenerate the front-end when a document has changed and its `_status` is `published`.
+Acest fișier, care conține funcțiile async function up() și async function down(), este singurul cod care trebuie inclus în PR. 
 
-For more details on how to extend this functionality, see the official [Draft Preview Example](https://github.com/payloadcms/payload/tree/examples/draft-preview).
+Pentru extra points se poate face și o migrare ce adaugă/modifică un câmp.
 
-## Live preview
+**_Diagrama ERD (Entity-Relationship Diagram)_**
 
-In addition to draft previews you can also enable live preview to view your end resulting page as you're editing content with full support for SSR rendering. See [Live preview docs](https://payloadcms.com/docs/live-preview/overview) for more details.
+O singură diagramă (imagine PNG/SVG sau PDF) care ilustrează vizual colecțiile pe care le-ați modelat și relațiile dintre ele (1-la-1, 1-la-M, M-la-M).
 
-## On-demand Revalidation
+Fișierul (ex: ERD.pdf) trebuie plasat în directorul rădăcină (root) al repository-ului.
 
-We've added hooks to collections and globals so that all of your pages, posts, footer, or header changes will automatically be updated in the frontend via on-demand revalidation supported by Nextjs.
+**Notă**: _Deși pentru a crea migrația trebuie să scrieți fișierele de definiție a colecțiilor (src/collections/...), includerea acestor fișiere-sursă în PR este opțională. Singurul livrabil de cod evaluat va fi fișierul de migrație generat. Câmpurile sunt orientative și subiect al modificărilor ulterioare dacă acestea sunt necesare pentru funcționalitate._
 
-> Note: if an image has been changed, for example it's been cropped, you will need to republish the page it's used on in order to be able to revalidate the Nextjs image cache.
+**Trimiterea Temei:**
 
-## SEO
+- Faceți un "fork" la repository-ul asociației.
+- Creați un "branch" nou (ex. feature/db-migration-numele_vostru).
+- Adăugați fișierul de migrație generat în src/migrations/ și diagrama ERD în directorul rădăcină.
+- Trimiteți un Pull Request către repository-ul oficial: https://github.com/Asociatia-AI3/activity-app
 
-This template comes pre-configured with the official [Payload SEO Plugin](https://payloadcms.com/docs/plugins/seo) for complete SEO control from the admin panel. All SEO data is fully integrated into the front-end website that comes with this template. See [Website](#website) for more details.
+### 5. 💡 Sfaturi și Evaluare
+**Citiți documentația Payload!** Este esențial să înțelegeți cum se definesc colecțiile pentru a putea genera migrația.
 
-## Search
+**Atenție la proces**: Sarcina voastră este să definiți colecțiile în TypeScript (local) și să generați fișierul de migrație. Nu trebuie să scrieți manual funcțiile up/down, ci să vă asigurați că generarea lor funcționează corect și reflectă cerințele.
 
-This template also pre-configured with the official [Payload Search Plugin](https://payloadcms.com/docs/plugins/search) to showcase how SSR search features can easily be implemented into Next.js with Payload. See [Website](#website) for more details.
+**Gândiți relațiile**: Stabiliți corect cardinalitatea. Când este o relație hasMany (array de ID-uri) și când este one-to-one sau many-to-one (un singur ID)? O diagramă ERD corectă depinde de acest pas.
 
-## Redirects
-
-If you are migrating an existing site or moving content to a new URL, you can use the `redirects` collection to create a proper redirect from old URLs to new ones. This will ensure that proper request status codes are returned to search engines and that your users are not left with a broken link. This template comes pre-configured with the official [Payload Redirects Plugin](https://payloadcms.com/docs/plugins/redirects) for complete redirect control from the admin panel. All redirects are fully integrated into the front-end website that comes with this template. See [Website](#website) for more details.
-
-## Jobs and Scheduled Publish
-
-We have configured [Scheduled Publish](https://payloadcms.com/docs/versions/drafts#scheduled-publish) which uses the [jobs queue](https://payloadcms.com/docs/jobs-queue/jobs) in order to publish or unpublish your content on a scheduled time. The tasks are run on a cron schedule and can also be run as a separate instance if needed.
-
-> Note: When deployed on Vercel, depending on the plan tier, you may be limited to daily cron only.
-
-## Website
-
-This template includes a beautifully designed, production-ready front-end built with the [Next.js App Router](https://nextjs.org), served right alongside your Payload app in a instance. This makes it so that you can deploy both your backend and website where you need it.
-
-Core features:
-
-- [Next.js App Router](https://nextjs.org)
-- [TypeScript](https://www.typescriptlang.org)
-- [React Hook Form](https://react-hook-form.com)
-- [Payload Admin Bar](https://github.com/payloadcms/payload/tree/main/packages/admin-bar)
-- [TailwindCSS styling](https://tailwindcss.com/)
-- [shadcn/ui components](https://ui.shadcn.com/)
-- User Accounts and Authentication
-- Fully featured blog
-- Publication workflow
-- Dark mode
-- Pre-made layout building blocks
-- SEO
-- Search
-- Redirects
-- Live preview
-
-### Cache
-
-Although Next.js includes a robust set of caching strategies out of the box, Payload Cloud proxies and caches all files through Cloudflare using the [Official Cloud Plugin](https://www.npmjs.com/package/@payloadcms/payload-cloud). This means that Next.js caching is not needed and is disabled by default. If you are hosting your app outside of Payload Cloud, you can easily reenable the Next.js caching mechanisms by removing the `no-store` directive from all fetch requests in `./src/app/_api` and then removing all instances of `export const dynamic = 'force-dynamic'` from pages files, such as `./src/app/(pages)/[slug]/page.tsx`. For more details, see the official [Next.js Caching Docs](https://nextjs.org/docs/app/building-your-application/caching).
-
-## Development
-
-To spin up this example locally, follow the [Quick Start](#quick-start). Then [Seed](#seed) the database with a few pages, posts, and projects.
-
-### Working with Postgres
-
-Postgres and other SQL-based databases follow a strict schema for managing your data. In comparison to our MongoDB adapter, this means that there's a few extra steps to working with Postgres.
-
-Note that often times when making big schema changes you can run the risk of losing data if you're not manually migrating it.
-
-#### Local development
-
-Ideally we recommend running a local copy of your database so that schema updates are as fast as possible. By default the Postgres adapter has `push: true` for development environments. This will let you add, modify and remove fields and collections without needing to run any data migrations.
-
-If your database is pointed to production you will want to set `push: false` otherwise you will risk losing data or having your migrations out of sync.
-
-#### Migrations
-
-[Migrations](https://payloadcms.com/docs/database/migrations) are essentially SQL code versions that keeps track of your schema. When deploy with Postgres you will need to make sure you create and then run your migrations.
-
-Locally create a migration
-
-```bash
-pnpm payload migrate:create
-```
-
-This creates the migration files you will need to push alongside with your new configuration.
-
-On the server after building and before running `pnpm start` you will want to run your migrations
-
-```bash
-pnpm payload migrate
-```
-
-This command will check for any migrations that have not yet been run and try to run them and it will keep a record of migrations that have been run in the database.
-
-### Docker
-
-Alternatively, you can use [Docker](https://www.docker.com) to spin up this template locally. To do so, follow these steps:
-
-1. Follow [steps 1 and 2 from above](#development), the docker-compose file will automatically use the `.env` file in your project root
-1. Next run `docker-compose up`
-1. Follow [steps 4 and 5 from above](#development) to login and create your first admin user
-
-That's it! The Docker instance will help you get up and running quickly while also standardizing the development environment across your teams.
-
-### Seed
-
-To seed the database with a few pages, posts, and projects you can click the 'seed database' link from the admin panel.
-
-The seed script will also create a demo user for demonstration purposes only:
-
-- Demo Author
-  - Email: `demo-author@payloadcms.com`
-  - Password: `password`
-
-> NOTICE: seeding the database is destructive because it drops your current database to populate a fresh one from the seed template. Only run this command if you are starting a new project or can afford to lose your current data.
-
-## Production
-
-To run Payload in production, you need to build and start the Admin panel. To do so, follow these steps:
-
-1. Invoke the `next build` script by running `pnpm build` or `npm run build` in your project root. This creates a `.next` directory with a production-ready admin bundle.
-1. Finally run `pnpm start` or `npm run start` to run Node in production and serve Payload from the `.build` directory.
-1. When you're ready to go live, see Deployment below for more details.
-
-### Deploying to Vercel
-
-This template can also be deployed to Vercel for free. You can get started by choosing the Vercel DB adapter during the setup of the template or by manually installing and configuring it:
-
-```bash
-pnpm add @payloadcms/db-vercel-postgres
-```
-
-```ts
-// payload.config.ts
-import { vercelPostgresAdapter } from '@payloadcms/db-vercel-postgres'
-
-export default buildConfig({
-  // ...
-  db: vercelPostgresAdapter({
-    pool: {
-      connectionString: process.env.POSTGRES_URL || '',
-    },
-  }),
-  // ...
-```
-
-We also support Vercel's blob storage:
-
-```bash
-pnpm add @payloadcms/storage-vercel-blob
-```
-
-```ts
-// payload.config.ts
-import { vercelBlobStorage } from '@payloadcms/storage-vercel-blob'
-
-export default buildConfig({
-  // ...
-  plugins: [
-    vercelBlobStorage({
-      collections: {
-        [Media.slug]: true,
-      },
-      token: process.env.BLOB_READ_WRITE_TOKEN || '',
-    }),
-  ],
-  // ...
-```
-
-There is also a simplified [one click deploy](https://github.com/payloadcms/payload/tree/templates/with-vercel-postgres) to Vercel should you need it.
-
-### Self-hosting
-
-Before deploying your app, you need to:
-
-1. Ensure your app builds and serves in production. See [Production](#production) for more details.
-2. You can then deploy Payload as you would any other Node.js or Next.js application either directly on a VPS, DigitalOcean's Apps Platform, via Coolify or more. More guides coming soon.
-
-You can also deploy your app manually, check out the [deployment documentation](https://payloadcms.com/docs/production/deployment) for full details.
-
-## Questions
-
-If you have any issues or questions, reach out to us on [Discord](https://discord.com/invite/payload) or start a [GitHub discussion](https://github.com/payloadcms/payload/discussions).
+Succes!
