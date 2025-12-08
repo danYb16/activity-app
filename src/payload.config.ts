@@ -63,6 +63,7 @@ export default buildConfig({
     client: {
       url: process.env.DATABASE_URI || '',
     },
+    push: false,
   }),
   collections: [Pages, Posts, Media, Categories, Users],
   cors: [getServerSideURL()].filter(Boolean),
