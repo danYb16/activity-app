@@ -34,9 +34,11 @@ export const Volunteers: CollectionConfig = {
       name: 'birthDate',
       type: 'date',
       required: false,
-      date: {
-        pickerAppearance: 'dayOnly',
-        displayFormat: 'yyyy-MM-dd',
+      admin: {
+        date: {
+          pickerAppearance: 'dayOnly',
+          displayFormat: 'yyyy-MM-dd',
+        },
       },
     },
     {
