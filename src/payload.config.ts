@@ -29,6 +29,7 @@ import { LocationPhotos } from './collections/LocationPhotos'
 import { Guests } from './collections/Guests'
 import { Activities } from './collections/Activities'
 import { ActivityGuests } from './collections/ActivityGuests'
+import { Schedule } from './collections/Schedule'
 // import { Footer } from './Footer/config'
 // import { Header } from './Header/config'
 import { plugins } from './plugins'
@@ -104,6 +105,7 @@ export default buildConfig({
     Guests,
     Activities,
     ActivityGuests,
+    Schedule,
   ],
   cors: [getServerSideURL()].filter(Boolean),
   globals: [],

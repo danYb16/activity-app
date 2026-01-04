@@ -90,6 +90,7 @@ export interface Config {
     guests: Guest;
     activities: Activity;
     activity_guests: ActivityGuest;
+    schedule: Schedule;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -121,6 +122,7 @@ export interface Config {
     guests: GuestsSelect<false> | GuestsSelect<true>;
     activities: ActivitiesSelect<false> | ActivitiesSelect<true>;
     activity_guests: ActivityGuestsSelect<false> | ActivityGuestsSelect<true>;
+    schedule: ScheduleSelect<false> | ScheduleSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -621,6 +623,20 @@ export interface ActivityGuest {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "schedule".
+ */
+export interface Schedule {
+  id: number;
+  edition: number | FestivalEdition;
+  startTime: string;
+  endTime: string;
+  activity: number | Activity;
+  location: number | Location;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -826,6 +842,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'activity_guests';
         value: number | ActivityGuest;
+      } | null)
+    | ({
+        relationTo: 'schedule';
+        value: number | Schedule;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1172,6 +1192,19 @@ export interface ActivityGuestsSelect<T extends boolean = true> {
   activity?: T;
   guest?: T;
   role?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "schedule_select".
+ */
+export interface ScheduleSelect<T extends boolean = true> {
+  edition?: T;
+  startTime?: T;
+  endTime?: T;
+  activity?: T;
+  location?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
